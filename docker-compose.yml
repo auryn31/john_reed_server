@@ -1,0 +1,14 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+        - ./john_reed.py:/john_reed.py
+  redis:
+    image: "redis:alpine"
+    volumes: 
+        - ./data:/data
+    environment: 
+        - appendonly=yes
