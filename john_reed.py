@@ -18,7 +18,7 @@ def load_json(r, studio, yesterday):
         yesterday = date.today() - timedelta(days=1)
         timestampStr = yesterday.strftime("%d-%b-%Y-23")
     redis_key = studio + '-' + timestampStr
-    print("["+timestampStr+"] Call for key:" + redis_key)
+    print("["+timestampStr+"] Call for key: " + redis_key + " yesterday: " + str(yesterday))
     a = r.get(redis_key)
     if a:
         return a
@@ -43,8 +43,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         yesterday = False
         if "yesterday" in url_parameter:
             yesterday = url_parameter["yesterday"][0] == 'True' or url_parameter["yesterday"][0] == 'true'
-        print("StrudioID: " + str(studio))
-        print("Yesterday: " + str(yesterday))
         content = load_json(r, studio, yesterday)
         print(content)
         if content != 'null':
