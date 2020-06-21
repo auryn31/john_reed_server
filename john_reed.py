@@ -39,10 +39,17 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         parsed = urlparse.urlparse(self.path)
 
         url_parameter = parse_qs(parsed.query)
-        studio = url_parameter["studio"][0]
+        if "studio" in url_parameter:
+            studio = url_parameter["studio"][0]
+        else:
+            self.send_response(HTTPStatus.BAD_REQUEST)
+            self.end_headers()
+            return
+
         yesterday = False
         if "yesterday" in url_parameter:
             yesterday = url_parameter["yesterday"][0] == 'True' or url_parameter["yesterday"][0] == 'true'
+        
         content = load_json(r, studio, yesterday)
         if content != 'null':
             self.send_response(HTTPStatus.OK)
