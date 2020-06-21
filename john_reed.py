@@ -44,7 +44,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if "yesterday" in url_parameter:
             yesterday = url_parameter["yesterday"][0] == 'True' or url_parameter["yesterday"][0] == 'true'
         content = load_json(r, studio, yesterday)
-        print(content)
         if content != 'null':
             self.send_response(HTTPStatus.OK)
             self.end_headers()
