@@ -16,17 +16,25 @@ def load_json(r, studio, yesterday):
     timestampStr = dateTimeObj.strftime("%d-%b-%Y-%H")
     if yesterday == True:
         yesterday = date.today() - timedelta(days=1)
-        timestampStr = yesterday.strftime("%d-%b-%Y-23")
-    redis_key = studio + '-' + timestampStr
-    print("["+timestampStr+"] Call for key: " + redis_key + " yesterday: " + str(yesterday))
-    a = r.get(redis_key)
-    if a:
-        return a
-    if yesterday:
-        return 'null'
-    x = requests.get('https://typo3.johnreed.fitness/studiocapacity.json?studioId='+studio)
-    r.set(redis_key, x.content)
-    return x.content
+        timestampStr = yesterday.strftime("%d-%b-%Y-")
+        redis_key = studio + '-' + timestampStr + '*'
+        keys = []
+        for key in r.scan_iter(redis_key):
+            keys.append(key)
+        keys.sort()
+        return r.get(keys[len(keys)-1])
+
+    else:    
+        redis_key = studio + '-' + timestampStr
+        print("["+timestampStr+"] Call for key: " + redis_key + " yesterday: " + str(yesterday))
+        a = r.get(redis_key)
+        if a:
+            return a
+        if yesterday:
+            return 'null'
+        x = requests.get('https://typo3.johnreed.fitness/studiocapacity.json?studioId='+studio)
+        r.set(redis_key, x.content)
+        return x.content
 
 
 
